@@ -39,6 +39,7 @@ stages:
 
                 az deployment sub validate \
                   --location $(deploymentLocation) \
+                  --template-file main.bicep \
                   --parameters workloadName=$(workloadName) \ 
                     environment=$(environment) \
                     vmUsername=$(vmUsername) \
@@ -48,8 +49,7 @@ stages:
                     CICDAgentType=$(CICDAgentType) \
                     appGatewayFqdn=$(appGatewayFqdn) \
                     certificatePassword=$(certificatePassword) \
-                    appGatewayCertType=$(appGatewayCertType) \
-                  --template-file main.bicep
+                    appGatewayCertType=$(appGatewayCertType)
               workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
 
 #   - stage: build-and-deploy
