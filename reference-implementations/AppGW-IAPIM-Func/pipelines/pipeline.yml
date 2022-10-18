@@ -13,14 +13,14 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- template: apim-eslz-vars.yml
+- group: apim-eslz-vars
 
 resources:
   repositories:
   - repository: apimeslz
     type: github
-    name: cykreng/Enterprise-Scale-APIM
-    endpoint: <Github service connection name>
+    name: RobertoBorges/apim-landing-zone-accelerator
+    endpoint: 'RobertoBorges (1)'
 
 stages:
   - stage: retrieve_template_from_github_and_publish
