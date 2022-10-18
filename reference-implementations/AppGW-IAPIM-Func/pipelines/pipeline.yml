@@ -9,12 +9,6 @@
 
 trigger: none
 
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-- group: apim-eslz-vars
-
 resources:
   repositories:
   - repository: apimeslz
@@ -24,35 +18,109 @@ resources:
 
 stages:
   - stage: retrieve_template_from_github_and_publish
-    displayName: 'Fetch templates from github and store in pipeline'
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+    - group: apim-eslz-vars-dev
+    displayName: 'Fetch templates from github and validate '
     jobs:
-      - job: publish_artifact_to_pipeline
-        displayName: 'Publish bicep files as artifact to pipeline'
+      - job: validate_bicep
         steps:
           - checkout: apimeslz
-          - task: PublishPipelineArtifact@1
+
+          - task: AzureCLI@2
             inputs:
-              targetPath: '$(Pipeline.Workspace)/s/reference-implementations/AppGW-IAPIM-Func/bicep'
-              artifact: $(artifactName)
-              publishLocation: 'pipeline'
-  - stage: deploy_artifacts
-    displayName: 'Deploy all bicep artifacts'
-    jobs:
-      - deployment: 
-        displayName: 'Deploy APIM ESLZ artifacts to Azure subscription'
-        environment: $(environmentName)
-        strategy:
-         runOnce:
-           deploy:
-             steps:
-               - download: current
-                 artifact: $(artifactName)
-               - task: AzureCLI@2
-                 inputs:
-                   azureSubscription: $(serviceConnectionName)
-                   scriptType: 'pscore'
-                   scriptLocation: 'inlineScript'
-                   inlineScript: |
-                    echo "using serviceconnection :" $(serviceConnectionName)
-                    az deployment sub create --location $(deploymentLocation) --name $(deploymentName) --template-file $(Pipeline.Workspace)/$(artifactName)/main.bicep --parameters workloadName=$(workloadName) environment=$(eslzEnvironmentType)
+              azureSubscription: '$(serviceConnectionName)'
+              scriptType: 'pscore'
+              scriptLocation: 'inlineScript'
+              inlineScript: | 
+                
+                echo validating bicep
+
+                az deployment sub validate \
+                  --location $(deploymentLocation) \
+                  --parameters workloadName=$(workloadName) \ 
+                    environment=$(environment) \
+                    vmUsername=$(vmUsername) \
+                    vmPassword=$(vmPassword) \
+                    accountName=$(sourceControlaccountName) \
+                    personalAccessToken=$(personalAccessToken) \
+                    CICDAgentType=$(CICDAgentType) \
+                    appGatewayFqdn=$(appGatewayFqdn) \
+                    certificatePassword=$(certificatePassword) \
+                    appGatewayCertType=$(appGatewayCertType) \
+                  --template-file main.bicep
+              workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
+
+#   - stage: build-and-deploy
+#     displayName: 'Deploy all bicep artifacts'
+#     jobs:
+#       - deployment: 
+#         displayName: 'Deploy APIM ESLZ artifacts to Azure subscription'
+#         environment: $(environmentName)
+#         strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#               - task: AzureCLI@2
+#                 inputs:
+#                   azureSubscription: '$(serviceConnectionName)'
+#                   scriptType: 'pscore'
+#                   scriptLocation: 'inlineScript'
+#                   inlineScript: | 
+#                     echo "Deploying to $(deploymentLocation) with name prefix $(workloadName) and environment tag $(environment)"
+
+#               - name: Run Preflight Validation
+#                 working-directory: ./reference-implementations/AppGW-IAPIM-Func/bicep
+#                 run: |
+                    
+        
+#                 # Deploy Bicep file, need to point parameters to the main.parameters.json location
+#               - name: deploy
+#                 uses: azure/arm-deploy@v1
+#                 with:
+#                   subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+#                   scope: subscription
+#                   region: ${{ fromJson(env.config).AZURE_LOCATION }}
+#                   template: ./reference-implementations/AppGW-IAPIM-Func/bicep/main.bicep
+#                   parameters: > 
+#                     workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }} 
+#                     vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }} 
+#                     accountName=${{ secrets.ACCOUNT_NAME }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}}
+#                     appGatewayFqdn=${{ secrets.FQDN }} certificatePassword=${{ secrets.CERTPW }} appGatewayCertType=${{ fromJson(env.config).CERT_TYPE }}
+
+# ________OLD_______
+#     jobs:
+#       - job: publish_artifact_to_pipeline
+#         displayName: 'Publish bicep files as artifact to pipeline'
+#         steps:
+#           - checkout: apimeslz
+#           - task: PublishPipelineArtifact@1
+#             inputs:
+#               targetPath: '$(Pipeline.Workspace)/s/reference-implementations/AppGW-IAPIM-Func/bicep'
+#               artifact: $(artifactName)
+#               publishLocation: 'pipeline'
+
+#   - stage: deploy_artifacts
+#     variables:
+#     - group: apim-eslz-vars-dev  
+#     displayName: 'Deploy all bicep artifacts'
+#     jobs:
+#       - deployment: 
+#         displayName: 'Deploy APIM ESLZ artifacts to Azure subscription'
+#         environment: $(environmentName)
+#         strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - download: current
+#                  artifact: $(artifactName)
+#                - task: AzureCLI@2
+#                  inputs:
+#                    azureSubscription: $(serviceConnectionName)
+#                    scriptType: 'pscore'
+#                    scriptLocation: 'inlineScript'
+#                    inlineScript: |
+#                     echo "using serviceconnection :" $(serviceConnectionName)
+#                     az deployment sub create --location $(deploymentLocation) --name $(deploymentName) --template-file $(Pipeline.Workspace)/$(artifactName)/main.bicep --parameters workloadName=$(workloadName) environment=$(eslzEnvironmentType)
 
