@@ -43,6 +43,10 @@ stages:
   - stage: build_and_deploy
     displayName: 'Deploy all bicep artifacts'
     dependsOn: validate_bicep
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+    - group: apim-eslz-vars-dev
     jobs:
       - deployment: 
         displayName: 'Deploy APIM ESLZ artifacts to Azure subscription'
