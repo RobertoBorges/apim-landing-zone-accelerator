@@ -18,7 +18,7 @@ stages:
           script: |
             echo validate bicep
 
-            'az bicep build -f main.bicep'
+            az bicep build -f main.bicep
           workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
 
 # - stage: Validation
