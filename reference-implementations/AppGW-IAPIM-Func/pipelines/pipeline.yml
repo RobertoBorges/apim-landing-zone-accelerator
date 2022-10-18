@@ -32,7 +32,7 @@ stages:
           - checkout: apimeslz
           - task: PublishPipelineArtifact@1
             inputs:
-              targetPath: '$(Pipeline.Workspace)/s/deployment/bicep'
+              targetPath: '$(Pipeline.Workspace)/s/reference-implementations/AppGW-IAPIM-Func/bicep'
               artifact: $(artifactName)
               publishLocation: 'pipeline'
   - stage: deploy_artifacts
