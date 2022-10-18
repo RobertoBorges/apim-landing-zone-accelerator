@@ -55,6 +55,8 @@ stages:
          runOnce:
            deploy:
              steps:
+             
+              - checkout: apimeslz
               - task: AzureCLI@2
                 inputs:
                   azureSubscription: azure-pfeborges-subscription
