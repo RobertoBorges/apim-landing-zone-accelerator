@@ -76,38 +76,3 @@ stages:
 
                     az deployment sub create --location $(deploymentLocation) --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
                   workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
-# ________OLD_______
-#     jobs:
-#       - job: publish_artifact_to_pipeline
-#         displayName: 'Publish bicep files as artifact to pipeline'
-#         steps:
-#           - checkout: apimeslz
-#           - task: PublishPipelineArtifact@1
-#             inputs:
-#               targetPath: '$(Pipeline.Workspace)/s/reference-implementations/AppGW-IAPIM-Func/bicep'
-#               artifact: $(artifactName)
-#               publishLocation: 'pipeline'
-
-#   - stage: deploy_artifacts
-#     variables:
-#     - group: apim-eslz-vars-dev  
-#     displayName: 'Deploy all bicep artifacts'
-#     jobs:
-#       - deployment: 
-#         displayName: 'Deploy APIM ESLZ artifacts to Azure subscription'
-#         environment: $(environmentName)
-#         strategy:
-#          runOnce:
-#            deploy:
-#              steps:
-#                - download: current
-#                  artifact: $(artifactName)
-#                - task: AzureCLI@2
-#                  inputs:
-#                    azureSubscription: $(serviceConnectionName)
-#                    scriptType: 'pscore'
-#                    scriptLocation: 'inlineScript'
-#                    inlineScript: |
-#                     echo "using serviceconnection :" $(serviceConnectionName)
-#                     az deployment sub create --location $(deploymentLocation) --name $(deploymentName) --template-file $(Pipeline.Workspace)/$(artifactName)/main.bicep --parameters workloadName=$(workloadName) environment=$(eslzEnvironmentType)
-
