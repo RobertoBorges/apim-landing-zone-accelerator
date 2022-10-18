@@ -30,7 +30,7 @@ stages:
 
           - task: AzureCLI@2
             inputs:
-              azureSubscription: '$(serviceConnectionName)'
+              azureSubscription: azure-pfeborges-subscription
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: | 
