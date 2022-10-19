@@ -57,22 +57,16 @@ stages:
              steps:
              
               - checkout: apimeslz
-              - task: AzureCLI@2
-                inputs:
-                  azureSubscription: azure-pfeborges-subscription
-                  scriptType: 'pscore'
-                  scriptLocation: 'inlineScript'
-                  inlineScript: | 
-                    echo "Deploying to $(deploymentLocation) with name prefix $(workloadName) and environment tag $(environment)"
             
               - task: AzureCLI@2
+                displayName: Deploy azure resources
                 inputs:
                   azureSubscription: azure-pfeborges-subscription
                   scriptType: 'pscore'
                   scriptLocation: 'inlineScript'
                   inlineScript: | 
                     
-                    echo validating bicep
+                    echo "Deploying to $(deploymentLocation) with name prefix $(workloadName) and environment tag $(environment)"
 
-                    az deployment sub create --location $(deploymentLocation) --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
+                    az deployment sub create -name APIM-$(workloadName)-$(environment) --no-wait --location $(deploymentLocation) --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
                   workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
