@@ -70,5 +70,5 @@ stages:
 
                     az deployment sub create --name APIM-$(workloadName)-$(environment) --no-wait --location $(deploymentLocation) --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
                   
-                    echo "Deployment triggered, check the status under deployment on the subscriptions $(az account show --query 'name') with name APIM-$(workloadName)-$(environment)"
+                    echo "Deployment triggered, check the status under deployment on the subscriptions $(az account show --query 'name') with deployment name APIM-$(workloadName)-$(environment)"
                   workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
