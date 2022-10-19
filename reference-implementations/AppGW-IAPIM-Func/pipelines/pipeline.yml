@@ -25,6 +25,7 @@ stages:
     displayName: 'Fetch templates from github and validate '
     jobs:
       - job: validate_bicep
+        displayName: Validate Bicep files
         steps:
           - checkout: apimeslz
 
