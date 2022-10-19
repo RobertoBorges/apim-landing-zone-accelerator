@@ -37,7 +37,7 @@ stages:
                 
                 echo validating bicep
 
-                az deployment sub validate --location $(deploymentLocation) --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
+                az deployment sub validate --location $(deploymentLocation) --output table --template-file main.bicep --parameters workloadName=$(workloadName) environment=$(environment) vmUsername=$(vmUsername) vmPassword=$(vmPassword) accountName=$(sourceControlaccountName) personalAccessToken=$(personalAccessToken) CICDAgentType=$(CICDAgentType) appGatewayFqdn=$(appGatewayFqdn) certificatePassword=$(certificatePassword) appGatewayCertType=$(appGatewayCertType)
               workingDirectory: './reference-implementations/AppGW-IAPIM-Func/bicep'
 
   - stage: build_and_deploy
