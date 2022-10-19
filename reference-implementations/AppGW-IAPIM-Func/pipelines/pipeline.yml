@@ -29,6 +29,7 @@ stages:
           - checkout: apimeslz
 
           - task: AzureCLI@2
+            displayName: Validate bicep against the subscription 
             inputs:
               azureSubscription: azure-pfeborges-subscription
               scriptType: 'pscore'
