@@ -29,7 +29,7 @@ param vmPassword string
 param CICDAgentType string
 
 @description('The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
-param accountName string
+param sourceControlaccountName string
 
 @description('The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
 @secure()
@@ -116,7 +116,7 @@ module shared './shared/shared.bicep' = {
   name: 'sharedresources'
   scope: resourceGroup(sharedRG.name)
   params: {
-    accountName: accountName
+    sourceControlaccountName: sourceControlaccountName
     CICDAgentSubnetId: CICDAgentSubnetId
     CICDAgentType: CICDAgentType
     environment: environment
