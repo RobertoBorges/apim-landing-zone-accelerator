@@ -8,7 +8,7 @@
         "vmPassword": {
             "value": "ENTERPASSWORD"
         },
-        "accountName": {
+        "sourceControlaccountName": {
             "value": "https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none"
         },
         "personalAccessToken": {
@@ -25,6 +25,9 @@
         },
         "appGatewayFqdn" :{ 
             "value": "ENTER FQDN"
+        },
+        "certificatePassword": {
+            "value": "123456789"
         },
         "appGatewayCertType" :{
             "value": "selfsigned or custom"
