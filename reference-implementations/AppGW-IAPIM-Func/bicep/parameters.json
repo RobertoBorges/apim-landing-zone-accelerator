@@ -8,7 +8,7 @@
         "vmPassword": {
             "value": "ENTERPASSWORD"
         },
-        "sourceControlaccountName": {
+        "accountName": {
             "value": "https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none"
         },
         "personalAccessToken": {
