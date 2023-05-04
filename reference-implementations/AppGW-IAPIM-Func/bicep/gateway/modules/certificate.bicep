@@ -48,7 +48,7 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
     azPowerShellVersion: '6.6'
     arguments: ' -vaultName ${keyVaultName} -certificateName ${secretName} -subjectName ${subjectName} -certPwd ${certPwd} -certDataString ${certData} -certType ${appGatewayCertType}'
     scriptContent: '''
-      Install-Module -Name Az
+      Install-Module -Name -Confirm:$False
       Import-Module Az
 
       $password = ConvertTo-SecureString -String "Ab156423" -Force -AsPlainText
