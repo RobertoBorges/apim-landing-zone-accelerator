@@ -59,60 +59,37 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
 
       $ErrorActionPreference = 'Stop'
       $DeploymentScriptOutputs = @{}
+      if ($certType -eq 'selfsigned') {
+        $policy = New-AzKeyVaultCertificatePolicy -SubjectName $subjectName -IssuerName Self -ValidityInMonths 12 -Verbose
+        
+        # private key is added as a secret that can be retrieved in the ARM template
+        Add-AzKeyVaultCertificate -VaultName $vaultName -Name $certificateName -CertificatePolicy $policy -Verbose
+        
+        $newCert = Get-AzKeyVaultCertificate -VaultName $vaultName -Name $certificateName
 
-      # Install-Module -Name Az -Confirm:$False -Force
-      Import-Module Az
+        # it takes a few seconds for KeyVault to finish
+        $tries = 0
+        do {
+          Write-Host 'Waiting for certificate creation completion...'
+          Start-Sleep -Seconds 10
+          $operation = Get-AzKeyVaultCertificateOperation -VaultName $vaultName -Name $certificateName
+          $tries++
 
-      $password = ConvertTo-SecureString -String "Ab156423" -Force -AsPlainText
+          if ($operation.Status -eq 'failed')
+          {
+          throw 'Creating certificate $certificateName in vault $vaultName failed with error $($operation.ErrorMessage)'
+          }
 
-      # Creating Root Certificate
-      $rootCert = New-SelfSignedCertificate -CertStoreLocation "cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 2048 -NotAfter (Get-Date).AddYears(10) -KeySpec Signature -KeyUsage CertSign, CRLSign, DigitalSignature, DataEncipherment, KeyAgreement -FriendlyName 'mydemocompany.com' -Subject 'CN=*.mydemocompany.com' -TextExtension @("2.5.29.17={text}DNS=*.mydemocompany.com&DNS=mydemocompany.com&DNS=*.scm.myase.mydemocompany.com") 
-      $exportedCert = $rootCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-      Set-Content -Path ".\mydemocompany.com.cer" -Value $exportedCert -Encoding Byte
-      $exportedRootPfx = $rootCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-      Set-Content -Path ".\mydemocompany.com.pfx" -Value $exportedRootPfx -Encoding Byte
-
-      # Creating the leaf certificate
-      $signedLeafCert = New-SelfSignedCertificate -DnsName $certificateName -CertStoreLocation "cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 2048 -NotAfter (Get-Date).AddYears(2) -KeySpec Signature -KeyUsage CertSign, CRLSign, DigitalSignature, DataEncipherment, KeyAgreement  -FriendlyName $certificateName -Subject 'CN='$certificateName -Signer $rootCert 
-      $exportedCert = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-      Set-Content -Path ".\apim.mydemocompany.com.cer" -Value $exportedCert -Encoding Byte
-      $exportedPfx = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-      Set-Content -Path ".\apim.mydemocompany.com.pfx" -Value $exportedPfx -Encoding Byte
-
-      # Creating the leaf certificate
-      $signedLeafCert = New-SelfSignedCertificate -DnsName 'app1.mydemocompany.com' -CertStoreLocation "cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 2048 -NotAfter (Get-Date).AddYears(2) -KeySpec Signature -KeyUsage CertSign, CRLSign, DigitalSignature, DataEncipherment, KeyAgreement  -FriendlyName 'app1.mydemocompany.com' -Subject 'CN=app1.mydemocompany.com' -Signer $rootCert 
-      $exportedCert = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-      Set-Content -Path ".\app1.mydemocompany.com.cer" -Value $exportedCert -Encoding Byte
-      $exportedPfx = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-      Set-Content -Path ".\app1.mydemocompany.com.pfx" -Value $exportedPfx -Encoding Byte
-
-      # Creating the leaf certificate
-      $signedLeafCert = New-SelfSignedCertificate -DnsName 'app2.mydemocompany.com' -CertStoreLocation "cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 2048 -NotAfter (Get-Date).AddYears(2) -KeySpec Signature -KeyUsage CertSign, CRLSign, DigitalSignature, DataEncipherment, KeyAgreement  -FriendlyName 'app1.mydemocompany.com' -Subject 'CN=app2.mydemocompany.com' -Signer $rootCert 
-      $exportedCert = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-      Set-Content -Path ".\app2.mydemocompany.com.cer" -Value $exportedCert -Encoding Byte
-      $exportedPfx = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-      Set-Content -Path ".\app2.mydemocompany.com.pfx" -Value $exportedPfx -Encoding Byte
-
-      # Creating the leaf certificate
-      $signedLeafCert = New-SelfSignedCertificate -DnsName 'app3.mydemocompany.com' -CertStoreLocation "cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 2048 -NotAfter (Get-Date).AddYears(2) -KeySpec Signature -KeyUsage CertSign, CRLSign, DigitalSignature, DataEncipherment, KeyAgreement  -FriendlyName 'app1.mydemocompany.com' -Subject 'CN=app3.mydemocompany.com' -Signer $rootCert 
-      $exportedCert = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-      Set-Content -Path ".\app3.mydemocompany.com.cer" -Value $exportedCert -Encoding Byte
-      $exportedPfx = $signedLeafCert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-      Set-Content -Path ".\app3.mydemocompany.com.pfx" -Value $exportedPfx -Encoding Byte
-
-      # Importing certificates into Azure Key Vault
-      $rootCertName = 'mydemocompany-com2'
-      $leafCertName = 'apim-mydemocompany-com2'
-      $leafCertName2 = 'app1-mydemocompany-com2'
-      $leafCertName3 = 'app2-mydemocompany-com2'
-      $leafCertName4 = 'app3-mydemocompany-com2'
-
-      Import-AzKeyVaultCertificate -VaultName $vaultName -Name $rootCertName -FilePath ".\mydemocompany.com.pfx" -Password $password
-      Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName -FilePath ".\apim.mydemocompany.com.pfx" -Password $password
-      Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName2 -FilePath ".\app1.mydemocompany.com.pfx" -Password $password
-      Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName3 -FilePath ".\app2.mydemocompany.com.pfx" -Password $password
-      Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName4 -FilePath ".\app3.mydemocompany.com.pfx" -Password $password
-
+          if ($tries -gt 120)
+          {
+          throw 'Timed out waiting for creation of certificate $certificateName in vault $vaultName'
+          }
+        } while ($operation.Status -ne 'completed')		
+      }
+      else {
+        $ss = Convertto-SecureString -String $certPwd -AsPlainText -Force; 
+        Import-AzKeyVaultCertificate -Name $certificateName -VaultName $vaultName -CertificateString $certDataString -Password $ss
+      }
 
 
       '''
