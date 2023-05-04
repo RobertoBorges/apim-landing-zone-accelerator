@@ -32,7 +32,7 @@ stages:
           - task: AzureCLI@2
             displayName: Validate bicep against the subscription 
             inputs:
-              azureSubscription: azure-pfeborges-subscription
+              azureSubscription: non-prod-service-connection
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: | 
@@ -63,7 +63,7 @@ stages:
               - task: AzureCLI@2
                 displayName: Deploy azure resources
                 inputs:
-                  azureSubscription: azure-pfeborges-subscription
+                  azureSubscription: non-prod-service-connection
                   scriptType: 'pscore'
                   scriptLocation: 'inlineScript'
                   inlineScript: | 
