@@ -48,6 +48,9 @@ param appGatewayCertType string
 
 param location string = deployment().location
 
+@description('The name Azure DevOps or GitHub pool for this build agent to join. Use \'Default\' if you don\'t have a separate pool.')
+param poolName string = 'Default'
+
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
@@ -128,6 +131,7 @@ module shared './shared/shared.bicep' = {
     resourceSuffix: resourceSuffix
     vmPassword: vmPassword
     vmUsername: vmUsername
+    poolName: poolName
   }
 }
 

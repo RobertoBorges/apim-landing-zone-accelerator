@@ -46,6 +46,9 @@ param resourceSuffix string
 ])
 param environment string
 
+@description('The name Azure DevOps or GitHub pool for this build agent to join. Use \'Default\' if you don\'t have a separate pool.')
+param poolName string = 'Default'
+
 // Variables - ensure key vault name does not end with '-'
 var tempKeyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
 var keyVaultName = endsWith(tempKeyVaultName, '-') ? substring(tempKeyVaultName, 0, length(tempKeyVaultName) - 1) : tempKeyVaultName
@@ -70,7 +73,7 @@ module vm_devopswinvm './createvmwindows.bicep' = if (toLower(CICDAgentType)!='n
     password: vmPassword
     vmName: '${CICDAgentType}-${environment}'
     accountName: accountName
-
+    poolName: poolName
     personalAccessToken: personalAccessToken
     CICDAgentType: CICDAgentType
     deployAgent: true
