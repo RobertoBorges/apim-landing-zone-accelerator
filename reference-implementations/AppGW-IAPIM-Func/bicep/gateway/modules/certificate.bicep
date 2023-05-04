@@ -45,7 +45,7 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
   location: location 
   kind: 'AzurePowerShell'
   properties: {
-    azPowerShellVersion: '6.6'
+    azPowerShellVersion:  '8.3'
     arguments: ' -vaultName ${keyVaultName} -certificateName ${secretName} -subjectName ${subjectName} -certPwd ${certPwd} -certDataString ${certData} -certType ${appGatewayCertType}'
     scriptContent: '''
       param(
