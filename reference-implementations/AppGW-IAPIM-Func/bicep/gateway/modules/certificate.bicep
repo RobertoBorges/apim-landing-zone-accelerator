@@ -48,6 +48,18 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
     azPowerShellVersion: '6.6'
     arguments: ' -vaultName ${keyVaultName} -certificateName ${secretName} -subjectName ${subjectName} -certPwd ${certPwd} -certDataString ${certData} -certType ${appGatewayCertType}'
     scriptContent: '''
+      param(
+      [string] [Parameter(Mandatory=$true)] $vaultName,
+      [string] [Parameter(Mandatory=$true)] $certificateName,
+      [string] [Parameter(Mandatory=$true)] $subjectName,
+      [string] [Parameter(Mandatory=$true)] $certPwd,
+      [string] [Parameter(Mandatory=$true)] $certDataString,
+      [string] [Parameter(Mandatory=$true)] $certType
+      )
+
+      $ErrorActionPreference = 'Stop'
+      $DeploymentScriptOutputs = @{}
+
       Install-Module -Name Az -Confirm:$False -Force
       Import-Module Az
 
@@ -100,6 +112,8 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName2 -FilePath ".\app1.mydemocompany.com.pfx" -Password $password
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName3 -FilePath ".\app2.mydemocompany.com.pfx" -Password $password
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName4 -FilePath ".\app3.mydemocompany.com.pfx" -Password $password
+
+
 
       '''
     retentionInterval: 'P1D'
