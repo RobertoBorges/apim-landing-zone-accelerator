@@ -48,7 +48,7 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
     azPowerShellVersion: '6.6'
     arguments: ' -vaultName ${keyVaultName} -certificateName ${secretName} -subjectName ${subjectName} -certPwd ${certPwd} -certDataString ${certData} -certType ${appGatewayCertType}'
     scriptContent: '''
-      Install-Module -Name -Confirm:$False
+      Install-Module -Name Az -Confirm:$False -Force
       Import-Module Az
 
       $password = ConvertTo-SecureString -String "Ab156423" -Force -AsPlainText
@@ -100,6 +100,7 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName2 -FilePath ".\app1.mydemocompany.com.pfx" -Password $password
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName3 -FilePath ".\app2.mydemocompany.com.pfx" -Password $password
       Import-AzKeyVaultCertificate -VaultName $vaultName -Name $leafCertName4 -FilePath ".\app3.mydemocompany.com.pfx" -Password $password
+
       '''
     retentionInterval: 'P1D'
   }
