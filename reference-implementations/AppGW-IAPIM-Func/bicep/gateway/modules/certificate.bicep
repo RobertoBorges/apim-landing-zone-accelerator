@@ -60,7 +60,7 @@ resource appGatewayCertificate 'Microsoft.Resources/deploymentScripts@2020-10-01
       $ErrorActionPreference = 'Stop'
       $DeploymentScriptOutputs = @{}
 
-      Install-Module -Name Az -Confirm:$False -Force
+      # Install-Module -Name Az -Confirm:$False -Force
       Import-Module Az
 
       $password = ConvertTo-SecureString -String "Ab156423" -Force -AsPlainText
