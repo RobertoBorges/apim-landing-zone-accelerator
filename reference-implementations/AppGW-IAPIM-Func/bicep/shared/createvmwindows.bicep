@@ -28,7 +28,7 @@ param vmName string
 param deployAgent bool=false
 
 @description('The Azure DevOps or GitHub account name')
-param sourceControlaccountName string=''
+param accountName string=''
 
 @description('The personal access token to connect to Azure DevOps or Github')
 @secure()
@@ -117,7 +117,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-0
       ]   
     }
     protectedSettings: {
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${sourceControlaccountName} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${CICDAgentType} '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${CICDAgentType} '
     }
   }
 }
