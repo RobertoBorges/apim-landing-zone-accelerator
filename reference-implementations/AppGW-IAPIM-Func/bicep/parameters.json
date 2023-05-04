@@ -31,6 +31,9 @@
         },
         "appGatewayCertType" :{
             "value": "selfsigned or custom"
+        },
+        "poolName" :{
+            "value": "Default"
         }
     }
 }
