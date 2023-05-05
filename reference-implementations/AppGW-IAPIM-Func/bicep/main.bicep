@@ -148,6 +148,19 @@ module apimModule 'apim/apim.bicep'  = {
   }
 }
 
+module apimModuleprod 'apim/apim.bicep'  = {
+  name: 'apimDeploy'
+  scope: resourceGroup(apimRG.name)
+  params: {
+    apimName: 'prod-${apimName}'
+    apimSubnetId: networking.outputs.apimSubnetid
+    location: location
+    appInsightsName: shared.outputs.appInsightsName
+    appInsightsId: shared.outputs.appInsightsId
+    appInsightsInstrumentationKey: shared.outputs.appInsightsInstrumentationKey
+  }
+}
+
 //Creation of private DNS zones
 module dnsZoneModule 'shared/dnszone.bicep'  = {
   name: 'apimDnsZoneDeploy'
