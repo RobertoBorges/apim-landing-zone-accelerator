@@ -149,7 +149,7 @@ module apimModule 'apim/apim.bicep'  = {
 }
 
 module apimModuleprod 'apim/apim.bicep'  = {
-  name: 'apimDeploy'
+  name: 'apimDeploy-Prod'
   scope: resourceGroup(apimRG.name)
   params: {
     apimName: 'prod-${apimName}'
